@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>E-Learning | SMP NEGERI 10 BANAWA SELATAN</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <style>
+        :root { --primary: #1e3a8a; --secondary: #3b82f6; --accent: #f59e0b; --purple: #a855f7; }
+        body { background-color: #f1f5f9; font-family: 'Source Sans Pro', sans-serif; }
+        
+        /* LOGIN STYLING */
+        #login-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%); display: flex; align-items: center; justify-content: center; padding: 15px; }
+        .login-container { display: flex; width: 850px; max-width: 100%; background: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
+        .login-brand { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; width: 40%; padding: 40px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .login-form-area { width: 60%; padding: 45px; }
+        .brand-line { width: 40px; height: 4px; background: var(--accent); border-radius: 2px; margin: 15px 0; }
+        
+        /* CONTENT STYLING */
+        .nav-pills .nav-link { border-radius: 20px; font-weight: 600; color: #64748b; background: #fff; border: 1px solid #e2e8f0; margin: 0 5px 10px 0; }
+        .nav-pills .nav-link.active { background-color: var(--primary) !important; color: white; }
+        .materi-card { border: none !important; border-radius: 18px !important; transition: 0.3s; cursor: pointer; background: #fff; overflow: hidden; }
+        .materi-card:hover { transform: translateY(-7px); box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important; }
+        .card-icon-area { height: 110px; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+        
+        /* Fitur Gambar Zoom */
+        #doc-content img, .img-preview { cursor: zoom-in; transition: 0.2s; max-width: 100% !important; height: auto !important; }
+        #doc-content img:hover, .img-preview:hover { opacity: 0.8; filter: brightness(90%); }
+
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .yt-link-btn { display: inline-block; background: #ff0000; color: #fff !important; padding: 5px 12px; border-radius: 8px; font-size: 14px; margin: 5px 0; text-decoration: none !important; font-weight: bold; }
+        #global-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body class="hold-transition layout-top-nav">
+
+<div id="login-page" style="display: none;">
+    <div class="login-container">
+        <div class="login-brand">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo-Tut-Wuri-Handayani-PNG-Warna.png" width="90" class="mb-3">
+            <h3 class="font-weight-bold mb-0">E-LEARNING</h3>
+            <div class="brand-line"></div>
+            <p>SMP NEGERI 10 BANAWA SELATAN</p>
+        </div>
+        <div class="login-form-area">
+            <h4 class="font-weight-bold text-dark mb-1">Selamat Datang 👋</h4>
+            <p class="text-muted mb-4">Masuk untuk mulai belajar.</p>
+            <div class="form-group"><label>Nama Lengkap</label><input type="text" id="user_nama" class="form-control form-control-lg" style="border-radius:12px" placeholder="Nama lengkap..."></div>
+            <div class="form-group mb-4"><label>Pilih Kelas</label>
+                <select id="user_kelas" class="form-control form-control-lg" style="border-radius:12px">
+                    <option value="" disabled selected>Pilih Kelas...</option>
+                    <option>Kelas VII (Tujuh)</option><option>Kelas VIII(Delapan)</option><option>Kelas IX (Sembilan)</option>                   
+                </select>
+            </div>
+            <button class="btn btn-primary btn-block btn-lg shadow-sm" style="border-radius:12px; font-weight:700" onclick="simpanIdentitas()">MULAI BELAJAR</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <div id="global-loader" class="d-none"><div class="spinner-border text-primary mb-2"></div><b>Menyiapkan Materi...</b></div>
+    
+    <nav class="main-header navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <span class="navbar-brand font-weight-bold text-primary">SMP NEGERI 10 BANAWA SELATAN</span>
+            <div class="ml-auto d-flex align-items-center">
+                <span id="display-nama" class="badge badge-light border p-2 mr-2" style="border-radius:10px"></span>
+                <button class="btn btn-sm btn-outline-danger rounded-circle" onclick="logout()"><i class="fas fa-power-off"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <div class="bg-white py-4 shadow-sm mb-4">
+            <div class="container text-center">
+                <h2 class="font-weight-bold mb-4">Materi Pembelajaran</h2>
+                <div class="d-flex justify-content-center flex-wrap mb-4">
+                    <div class="nav nav-pills" id="tab-filter">
+                        <button class="nav-link active" onclick="filterType('all')">SEMUA</button>
+                        <button class="nav-link" onclick="filterType('video')">VIDEO</button>
+                        <button class="nav-link" onclick="filterType('doc')">DOC</button>
+                        <button class="nav-link" onclick="filterType('ppt')">PPT</button>
+                        <button class="nav-link" onclick="filterType('pdf')">PDF</button>
+                        <button class="nav-link" onclick="filterType('image')">GAMBAR</button>
+                    </div>
+                </div>
+                <div class="input-group w-50 mx-auto" style="min-width: 300px;">
+                    <input type="text" id="search-materi" class="form-control shadow-sm" style="border-radius:20px 0 0 20px" placeholder="Cari judul..." onkeyup="applyFilters()">
+                    <div class="input-group-append"><span class="input-group-text bg-white shadow-sm" style="border-radius:0 20px 20px 0"><i class="fas fa-search"></i></span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="container pb-5">
+                <div id="view-grid" class="row"></div>
+                <div id="view-content" class="d-none">
+                    <div class="card card-primary card-outline shadow-lg border-0" style="border-radius:20px; overflow:hidden">
+                        <div class="card-header bg-white border-0 py-3 d-flex align-items-center">
+                            <h4 class="card-title font-weight-bold text-primary mb-0" id="main-title"></h4>
+                            <div class="ml-auto"><button class="btn btn-light rounded-circle shadow-sm" onclick="backToGrid()"><i class="fas fa-times text-danger"></i></button></div>
+                        </div>
+                        <div class="card-body p-0" id="doc-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mediaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="border-radius:15px; overflow:hidden">
+            <div class="modal-body p-0 bg-dark text-center" id="media-body">
+                </div>
+            <div class="modal-footer bg-light border-0 py-2"><button class="btn btn-secondary mx-auto px-5 btn-sm" data-dismiss="modal">Tutup</button></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0jyB-siGE9GDicxh-xF6ecTeh0T2BBI5IgjGnQ60OD9VwrZZJGi6rNZMMw_8h-nVn/exec"; 
+    let allMateri = [], currentFilter = 'all';
+
+    $(document).ready(function() {
+        if (!localStorage.getItem('siswa_nama')) { $('#login-page').fadeIn(); } 
+        else { updateUserDisplay(); fetchMenu(); }
+    });
+
+    function simpanIdentitas() {
+        const n = $('#user_nama').val().trim(), k = $('#user_kelas').val();
+        if(n && k) {
+            localStorage.setItem('siswa_nama', n); localStorage.setItem('siswa_kelas', k);
+            updateUserDisplay(); $('#login-page').fadeOut(); fetchMenu();
+        } else { alert("Lengkapi data!"); }
+    }
+
+    function updateUserDisplay() { 
+        $('#display-nama').html(`<i class="fas fa-user-circle mr-1"></i> ${localStorage.getItem('siswa_nama')}`); 
+    }
+
+    function logout() { if(confirm("Keluar aplikasi?")) { localStorage.clear(); location.reload(); } }
+
+    async function fetchMenu() {
+        $('#global-loader').removeClass('d-none');
+        try {
+            const r = await fetch(SCRIPT_URL);
+            const d = await r.json();
+            allMateri = d.menu || [];
+            applyFilters();
+        } catch (e) { alert("Gagal menyambung server."); } finally { $('#global-loader').addClass('d-none'); }
+    }
+
+    function filterType(type) {
+        currentFilter = type;
+        $('#tab-filter .nav-link').removeClass('active');
+        $(`button[onclick="filterType('${type}')"]`).addClass('active');
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const s = $('#search-materi').val().toLowerCase();
+        let f = allMateri;
+        if (currentFilter !== 'all') f = f.filter(m => m.type === currentFilter);
+        if (s) f = f.filter(m => m.name.toLowerCase().includes(s));
+        renderCards(f);
+    }
+
+    function renderCards(list) {
+        const grid = $('#view-grid').empty();
+        if(!list.length) { grid.append('<div class="col-12 text-center py-5">Materi tidak ditemukan.</div>'); return; }
+        list.forEach(m => {
+            let icon = `<i class="fas fa-file-word text-primary fa-3x"></i>`;
+            if(m.type === 'video') icon = `<i class="fas fa-play-circle text-purple fa-3x"></i>`;
+            if(m.type === 'pdf') icon = `<i class="fas fa-file-pdf text-danger fa-3x"></i>`;
+            if(m.type === 'ppt') icon = `<i class="fas fa-file-powerpoint text-warning fa-3x"></i>`;
+            if(m.type === 'image') icon = `<i class="fas fa-image text-success fa-3x"></i>`;
+
+            grid.append(`
+                <div class="col-lg-3 col-md-4 col-6 mb-4">
+                    <div class="card materi-card shadow-sm h-100" onclick="openMateri('${m.id}', '${m.name}')">
+                        <div class="card-icon-area">${icon}</div>
+                        <div class="card-body p-3 text-center">
+                            <p class="font-weight-bold mb-1 small text-dark">${m.name}</p>
+                            <span class="badge badge-light border text-uppercase" style="font-size:9px">${m.type}</span>
+                        </div>
+                    </div>
+                </div>
+            `);
+        });
+    }
+
+    async function openMateri(id, judul) {
+        $('#global-loader').removeClass('d-none');
+        const n = localStorage.getItem('siswa_nama'), k = localStorage.getItem('siswa_kelas');
+        
+        try {
+            const r = await fetch(`${SCRIPT_URL}?id=${id}`);
+            const d = await r.json();
+            
+            // Log activity
+            fetch(`${SCRIPT_URL}?action=log&nama=${encodeURIComponent(n)}&kelas=${encodeURIComponent(k)}&judul=${encodeURIComponent(judul)}&id=${id}&type=${d.type}`);
+
+            $('#view-grid').addClass('d-none'); $('#view-content').removeClass('d-none');
+            $('#main-title').text(judul);
+            const area = $('#doc-content');
+
+            if(d.type === 'video') {
+                area.html(`<div class="p-3 p-md-5 bg-dark"><div class="video-wrapper"><iframe src="${d.content}" allow="autoplay; fullscreen"></iframe></div></div>`);
+            } else if(d.type === 'image') {
+                // Gambar utama otomatis membesar saat dibuka
+                area.html(`<div class="text-center p-4 bg-light"><img src="${d.content}" class="img-preview img-fluid rounded shadow" onclick="showPopup('${d.content}', 'img')"></div>`);
+                showPopup(d.content, 'img');
+            } else if(d.type === 'doc') {
+                area.html(`<div class="p-4 p-md-5 bg-white doc-rendered">${d.content}</div>`);
+                processDocContent(); 
+            } else {
+                area.html(`<iframe src="${d.content}" style="width:100%; height:750px; border:none;"></iframe>`);
+            }
+            window.scrollTo(0,0);
+        } catch (e) { alert("File gagal dimuat."); } finally { $('#global-loader').addClass('d-none'); }
+    }
+
+    function processDocContent() {
+        // Klik gambar di dalam DOC untuk membesar (Zoom)
+        $('.doc-rendered img').each(function() {
+            $(this).attr('onclick', `showPopup('${$(this).attr('src')}', 'img')`);
+            $(this).addClass('img-preview');
+        });
+
+        // Link Youtube dalam DOC
+        $('.doc-rendered a').each(function() {
+            const url = $(this).attr('href');
+            if (url && (url.includes('youtube.com') || url.includes('youtu.be'))) {
+                let vId = url.includes('v=') ? url.split('v=')[1].split('&')[0] : url.split('/').pop();
+                $(this).after(`<br><a href="javascript:void(0)" class="yt-link-btn" onclick="showPopup('${vId}', 'yt')"><i class="fab fa-youtube"></i> Putar Video</a>`);
+                $(this).hide();
+            }
+        });
+    }
+
+    function showPopup(content, type) { 
+        const body = $('#media-body');
+        body.empty();
+        if(type === 'img') {
+            body.html(`<img src="${content}" class="img-fluid" style="max-height:85vh; padding:10px">`);
+        } else if(type === 'yt') {
+            body.html(`<div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${content}?autoplay=1" allow="autoplay; fullscreen"></iframe></div>`);
+        }
+        $('#mediaModal').modal('show'); 
+    }
+
+    $('#mediaModal').on('hidden.bs.modal', function () { $('#media-body').empty(); });
+    function backToGrid() { $('#view-content').addClass('d-none'); $('#view-grid').removeClass('d-none'); }
+</script>
+</body>
+</html>
